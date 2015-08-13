@@ -14,6 +14,7 @@
 (function ($) {
     "use strict";
 
+    var sortingClass = "sorting";
     /**
      * @type {number}
      */
@@ -140,6 +141,12 @@
                                                             text: 25
                                                         })
                                                     )
+                                                    .append(
+                                                        $('<option>', {
+                                                            value: 50,
+                                                            text: 50
+                                                        })
+                                                    )
                                             )
                                     )
                             )
@@ -153,7 +160,7 @@
             }
 
             searchTable(tableBody);
-            sortColumn(obj, tableBody);
+            sortColumn(obj, tableBody, actualPage);
 
             $('body').on('click', '.pagination li', function (event) {
                 var listItem;
@@ -188,12 +195,13 @@
          * @link http://jsfiddle.net/spetnik/gFzCk/1953/
          * @param obj
          */
-        function sortColumn(obj) {
+        function sortColumn(obj, tableBody, page) {
             var table = obj;
             var oldIndex = 0;
 
             obj
-                .find('thead th')
+            	//KYLE - added sorted class as not all want it.
+                .find('thead th.'+sortingClass)
                 .wrapInner('<span class="sort-element"/>')
                 .append(
                     $('<span/>')
@@ -241,11 +249,14 @@
                                 : inverse ? 1 : -1;
 
                         }, function () {
-
                             // parentNode is the element we want to move
                             return this.parentNode;
 
                         });
+						
+						//KYLE - paginate forward and back again to refresh the order correctly.
+						paginate(tableBody, "next");
+			            paginate(tableBody, "previous");
 
                         inverse = !inverse;
                         oldIndex = thIndex;
